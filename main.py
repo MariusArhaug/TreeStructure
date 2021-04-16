@@ -1,7 +1,6 @@
 import pandas as pd
-import pprint
-import json
 import math
+from node import Node
 
 
 def read_file(file):
@@ -11,31 +10,19 @@ def read_file(file):
     return id_list, parent_list
 
 
-class Node:
-    def __init__(self, id, parent_id):
-        self.id = id
-        self.parent_id = parent_id
-        self.children = []
+def create_node_list():
+    id_list, parent_list = read_file('Oppgave2.xlsx')
 
-    def add_child(self, node):
-        if self.is_parent(node):
-            self.children.append(node)
+    nodes = []
+    root_node = None
+    for id, parent_id in zip(id_list, parent_list):
+        if math.isnan(parent_id):
+            root_node = Node(id, None)
+            continue
+        nodes.append(Node(id, int(parent_id)))
+    nodes = sorted(nodes, key=lambda x: x.parent_id)
 
-    def is_parent(self, node):
-        return self.id == node.parent_id
-
-    def to_JSON(self):
-        return json.dumps(self, default=lambda o: o.__dict__, indent=2)
-
-    def __repr__(self):
-        return f"ID: {self.id} ParentID: {self.parent_id} {self.children}"
-
-
-def create_hierarchy():
-    root, node_list = create_node_list()
-    graph = create_tree(root, node_list)
-    print(graph.to_JSON())
-
+    return root_node, nodes
 
 def create_tree(root, node_list):
     hashmap = {root.id: root}
@@ -49,20 +36,91 @@ def create_tree(root, node_list):
     return root
 
 
-def create_node_list():
-    id_list, parent_list = read_file('Oppgave.xlsx')
+def find_path(root, start_id, end_id):
+    start_node = find_node(root, start_id)
+    end_node = find_node(root, end_id)
+    path = [start_node]
+    relative_path = find_way(start_node, end_id)
 
-    nodes = []
-    root_node = None
-    for id, parent_id in zip(id_list, parent_list):
-        if math.isnan(parent_id):
-            root_node = Node(id, 'root')
+    if end_node not in relative_path:
+        relative_path = find_path(root, start_id, end_id)
+
+    for node in relative_path:
+        path.append(node)
+    path.append(end_node)
+    return path
+
+
+def find_way(start_node, end_id, path=[]):
+    for child in start_node:
+        if child.id != end_id:
+            path.append(child)
+            if len(child.children) == 0:
+                path = find_way(start_node, end_id, [])
+            path = find_way(child, end_id, path)
+    return path
+
+
+def find_node(root, node_id):
+    if root.id == node_id:
+        return root
+    for child in root:
+        if child.id == node_id:
+            return child
+    for child in root:
+        node = find_node(child, node_id)
+        if node is None:
+            return node
+    return None
+
+
+def find_maximum(graph, max_depth=1):
+    new_max = max_depth
+    for child in graph:
+        if new_max < child.depth and len(child.children) == 0:
+            new_max = child.depth
             continue
-        nodes.append(Node(id, int(parent_id)))
-    # nodes = sorted(nodes, key=lambda x: x.parent_id)
+        return find_maximum(child.children, new_max)
+    return new_max
 
-    return root_node, nodes
 
+def find_biggest_depth_node(nodes, current_node=None):
+    for node in nodes:
+        if not current_node:
+            current_node = node
+        if current_node.depth < node.depth:
+            current_node = node
+        for child in node.children:
+            return find_biggest_depth_node(node.children, current_node)
+    return current_node
+
+
+def find_nodes_at_depth(root, depth, current_nodes=[]):
+    if root.depth == depth and root not in current_nodes:
+        current_nodes.append(root)
+    elif root.depth < depth:
+        for child in root:
+            current_nodes = find_nodes_at_depth(child, depth, current_nodes)
+    return current_nodes
+
+
+
+
+def create_hierarchy():
+    root, node_list = create_node_list()
+    root = create_tree(root, node_list)
+    create_depth([root])
+    print(root.to_JSON())
+
+    print(find_biggest_depth_node([root]))
+    # print(find_nodes_at_depth([root], find_maximum(root)))
+    print(find_nodes_at_depth(root, 4))
+
+
+def create_depth(node_list, depth=1):
+    for node in node_list:
+        node.depth = depth
+        create_depth(node.children, depth + 1)
 
 if __name__ == '__main__':
     create_hierarchy()
