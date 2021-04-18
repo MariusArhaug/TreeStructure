@@ -26,7 +26,7 @@ class Node:
         return self.id == node.parent_id
 
     def to_JSON(self):
-        return json.dumps(self, default=lambda o: o.__dict__, indent=2)
+        return json.dumps(self, default=lambda o: o.__dict__, indent=2, ensure_ascii=False)
 
     def __repr__(self):
         return f"ID: {self.id} ParentID: {self.parent_id} Depth: {self.depth}"

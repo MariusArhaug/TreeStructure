@@ -10,8 +10,14 @@ def read_file(file):
     return id_list, parent_list
 
 
+def write_to_file(root, filename):
+    with open (filename, 'w') as file:
+        output = root.to_JSON()
+        file.write(output)
+
+
 def create_node_list():
-    id_list, parent_list = read_file('Oppgave2.xlsx')
+    id_list, parent_list = read_file('Oppgave.xlsx')
 
     nodes = []
     root_node = None
@@ -61,7 +67,7 @@ def find_way(start_node, end_id, path=[]):
     return path
 
 
-def find_node(root, node_id):
+"""def find_node(root, node_id):
     if root.id == node_id:
         return root
     for child in root:
@@ -69,12 +75,36 @@ def find_node(root, node_id):
             return child
     for child in root:
         node = find_node(child, node_id)
-        if node is None:
+        if node is not None:
             return node
     return None
+"""
 
 
+def find_node(root, node_id, path=[]):
+    if len(path) == 0:
+        path.append(root)
+
+    if root.id == node_id:
+        return path
+    for child in root:
+        if child not in path:
+            path.append(child)
+        new_path = find_node(child, node_id, path)
+
+        if len(new_path) != 0:
+            return new_path
+
+    return []
+
+"""
 def find_maximum(graph, max_depth=1):
+    
+    Find deepest depth of element
+    :param graph:
+    :param max_depth:
+    :return:
+    
     new_max = max_depth
     for child in graph:
         if new_max < child.depth and len(child.children) == 0:
@@ -82,6 +112,10 @@ def find_maximum(graph, max_depth=1):
             continue
         return find_maximum(child.children, new_max)
     return new_max
+"""
+
+def find_maximum():
+    pass
 
 
 def find_biggest_depth_node(nodes, current_node=None):
@@ -96,6 +130,13 @@ def find_biggest_depth_node(nodes, current_node=None):
 
 
 def find_nodes_at_depth(root, depth, current_nodes=[]):
+    """
+    Find all nodes at a given depth
+    :param root: root of tree to search in
+    :param depth: depth value
+    :param current_nodes: list of observed nodes
+    :return: list of nodes at given depth level
+    """
     if root.depth == depth and root not in current_nodes:
         current_nodes.append(root)
     elif root.depth < depth:
@@ -104,23 +145,32 @@ def find_nodes_at_depth(root, depth, current_nodes=[]):
     return current_nodes
 
 
-
-
 def create_hierarchy():
     root, node_list = create_node_list()
     root = create_tree(root, node_list)
     create_depth([root])
-    print(root.to_JSON())
-
-    print(find_biggest_depth_node([root]))
+    # write_to_file(root, 'print1.txt')
+    # print(root.to_JSON())
+    # print(find_maximum(root))
+    # path = find_node(root, 28792)
+    # for node in path:
+    #    print(node)
+    # print(find_biggest_depth_node([root]))
     # print(find_nodes_at_depth([root], find_maximum(root)))
-    print(find_nodes_at_depth(root, 4))
+    # print(find_nodes_at_depth(root, 4))
 
 
 def create_depth(node_list, depth=1):
+    """
+    Go through tree recursively and increment depth counter for each level
+    :param node_list: list of root nodes
+    :param depth: start depth
+    :return: None. Mutate roots in node_list
+    """
     for node in node_list:
         node.depth = depth
         create_depth(node.children, depth + 1)
+
 
 if __name__ == '__main__':
     create_hierarchy()
