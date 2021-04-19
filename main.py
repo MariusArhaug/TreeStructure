@@ -1,13 +1,20 @@
 from __future__ import annotations
 from node import Node
+from typing import Optional, List, Tuple
 import pandas as pd
 import math
+from pprint import pprint
 
 
-def read_file(file: str) -> ([int], [int]):
-    data = pd.read_excel(rf'{file}', sheet_name="Data", usecols=['ID', 'PARENT_ID'])
-    id_list = list(map(int, (data['ID'].tolist())))
-    parent_list = list(map(int, data['PARENT_ID'].tolist()))
+def read_file(filename: str) -> Tuple[List[str], List[str]]:
+    """
+    Read file
+    :param filename: Read file with filename
+    :return: Two lists with ID and PArent_IDs respectively
+    """
+    data = pd.read_excel(rf'{filename}', sheet_name="Data", usecols=['ID', 'PARENT_ID'])
+    id_list = data['ID'].tolist()
+    parent_list = data['PARENT_ID'].tolist()
     return id_list, parent_list
 
 
@@ -39,66 +46,23 @@ def create_tree(root: Node, node_list: [Node]) -> Node:
     for node in node_list:
         hashmap[node.parent_id].add_child(hashmap[node.id])
 
+    create_depth([root])
     return root
 
 
-def find_path(root: Node, start_id: int, end_id: int) -> [Node]:
-    start_node = find_node(root, start_id)
-    end_node = find_node(root, end_id)
-    path = [start_node]
-    relative_path = find_way(start_node, end_id)
-
-    if end_node not in relative_path:
-        relative_path = find_path(root, start_id, end_id)
-
-    for node in relative_path:
-        path.append(node)
-    path.append(end_node)
-    return path
+def create_depth(node_list, depth=1):
+    """
+    Go through tree recursively and increment depth counter for each level
+    :param node_list: list of root nodes
+    :param depth: start depth
+    :return: None. Mutate roots in node_list
+    """
+    for node in node_list:
+        node.depth = depth
+        create_depth(node.children, depth + 1)
 
 
-def find_way(start_node, end_id, path=[]):
-    for child in start_node:
-        if child.id != end_id:
-            path.append(child)
-            if len(child.children) == 0:
-                path = find_way(start_node, end_id, [])
-            path = find_way(child, end_id, path)
-    return path
-
-
-"""def find_node(root, node_id):
-    if root.id == node_id:
-        return root
-    for child in root:
-        if child.id == node_id:
-            return child
-    for child in root:
-        node = find_node(child, node_id)
-        if node is not None:
-            return node
-    return None
-"""
-
-
-def find_node(root: Node, node_id: int, path=[]):
-    if len(path) == 0:
-        path.append(root)
-
-    if root.id == node_id:
-        return path
-    for child in root:
-        if child not in path:
-            path.append(child)
-        new_path = find_node(child, node_id, path)
-
-        if len(new_path) != 0:
-            return new_path
-
-    return []
-
-
-def find_maximum(root: Node, max_depth=1) -> int:
+def find_maximum(root: Node, max_depth: int = 1) -> int:
     """
     Find deepest depth level of leaf nodes in a given tree
     :param root: Root of tree
@@ -110,28 +74,36 @@ def find_maximum(root: Node, max_depth=1) -> int:
         if new_max < child.depth and len(child.children) == 0:
             new_max = child.depth
             continue
-        return find_maximum(child.children, new_max)
+        new_max = find_maximum(child.children, new_max)
     return new_max
 
 
-def find_biggest_depth_node(nodes, current_node=None):
-    for node in nodes:
-        if not current_node:
-            current_node = node
-        if current_node.depth < node.depth:
-            current_node = node
-        for child in node.children:
-            return find_biggest_depth_node(node.children, current_node)
-    return current_node
+def find_node(root: Node, node_id: int) -> Optional[Node]:
+    """
+    Find node with a given node-id
+    :param root: root of the tree we want to search for the node
+    :param node_id: id of the node we want
+    :return: Node if found, or None if the ID does not exist
+    """
+    if root.id == node_id:
+        return root
+    for child in root:
+        if child.id == node_id:
+            return child
+    for child in root:
+        node = find_node(child, node_id)
+        if node is not None:
+            return node
+    return None
 
 
-def find_nodes_at_depth(root, depth, current_nodes=[]):
+def find_nodes_at_depth(root: Node, depth: int, current_nodes: List[Node] = []):
     """
     Find all nodes at a given depth
     :param root: root of tree to search in
     :param depth: depth value
     :param current_nodes: list of observed nodes
-    :return: list of nodes at given depth level
+    :return: list of nodes at given depth level, the list is sorted by the first visited node
     """
     if root.depth == depth and root not in current_nodes:
         current_nodes.append(root)
