@@ -24,20 +24,31 @@ def write_to_file(root: Node, filename: str) -> None:
         file.write(output)
 
 
-def create_node_list(id_list: [int], parent_list: [int]) -> (Node, [Node]):
+def create_node_list(id_list: List[str], parent_list: List[str]) -> Tuple[Node, List[Node]]:
+    """
+    Transform lists of ID and ParentID into Node objects with corresponding data
+    Assumes theres only one root
+    :param id_list: List of ID for nodes
+    :param parent_list: List of ID for parent of nodes
+    :return: Root and List of Nodes
+    """
     nodes = []
     root_node = None
     for id, parent_id in zip(id_list, parent_list):
         if math.isnan(parent_id):
-            root_node = Node(id, None)
+            root_node = Node(int(id), None)
             continue
-        nodes.append(Node(id, parent_id))
-    # nodes = sorted(nodes, key=lambda x: x.parent_id)
-
+        nodes.append(Node(int(id), int(parent_id)))
     return root_node, nodes
 
 
-def create_tree(root: Node, node_list: [Node]) -> Node:
+def create_tree(root: Node, node_list: List[Node]) -> Node:
+    """
+
+    :param root:
+    :param node_list:
+    :return:
+    """
     hashmap = {root.id: root}
 
     for node in node_list:
