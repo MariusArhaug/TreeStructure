@@ -3,7 +3,7 @@ import json
 
 
 class Node:
-    def __init__(self, id, parent_id):
+    def __init__(self, id, parent_id=None):
         """
         Init
         :param id: ID of node
@@ -13,7 +13,7 @@ class Node:
         self.parent_id = parent_id
         self.depth = 1
         self.children = []
-        self.parent: Node
+        self.parent: Node = None
 
     def add_child(self, node: Node) -> None:
         """
