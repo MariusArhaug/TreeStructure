@@ -124,19 +124,33 @@ def find_nodes_at_depth(root: Node, depth: int, current_nodes: List[Node] = []):
     return current_nodes
 
 
-def create_hierarchy():
-    root, node_list = create_node_list(read_file())
-    root = create_tree(root, node_list)
-    create_depth([root])
-    # write_to_file(root, 'print1.json')
-
-
-def create_depth(node_list, depth=1):
+def find_route_up(start_node: Node, end_id: int, path: List[Node] = []) -> List[Node]:
     """
-    Go through tree recursively and increment depth counter for each level
-    :param node_list: list of root nodes
-    :param depth: start depth
-    :return: None. Mutate roots in node_list
+
+    :param start_node:
+    :param end_id:
+    :param path:
+    :return:
+    """
+    if start_node.parent_id is None and start_node.id != end_id:
+        return []
+
+    if start_node.id == end_id:
+        path.append(start_node)
+        return path
+
+    path.append(start_node)
+    return find_route_up(start_node.parent, end_id, path)
+
+
+def find_route_down(start_node: Node, end_id: int, visited: List[Node] = [], path: List[Node] = []) -> List[Node]:
+    """
+
+    :param start_node:
+    :param end_id:
+    :param visited:
+    :param path:
+    :return:
     """
     for node in node_list:
         node.depth = depth
@@ -144,4 +158,4 @@ def create_depth(node_list, depth=1):
 
 
 if __name__ == '__main__':
-    create_hierarchy()
+    main()
