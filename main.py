@@ -152,9 +152,81 @@ def find_route_down(start_node: Node, end_id: int, visited: List[Node] = [], pat
     :param path:
     :return:
     """
-    for node in node_list:
-        node.depth = depth
-        create_depth(node.children, depth + 1)
+    if start_node not in visited:
+        path.append(start_node)
+    if start_node.children.__len__() == 0:
+        return path
+
+    for child in start_node:
+        find_route_down(child, end_id, path)
+        for node in path:
+            if node.id == end_id:
+                return path
+            visited.append(node)
+
+        path = []
+
+    return path
+
+
+def find_route(root: Node, start_id: int,  end_id: int, is_desc=False) -> List[Node]:
+    """
+    Find route from a node with a id = start_id to another node with id = end_id
+    :param root: root of the tree we want to search in
+    :param start_id: id of the node we want to search from
+    :param end_id: id of the node we want to find
+    :param is_desc: if tree is strictly descending we can swap start and end_id and use same algorithm to find path.
+    :return: List of Nodes encountered in the path from start to end.
+    """
+
+    if is_desc:
+        if start_id > end_id:
+            node = find_node(root, start_id)
+            return find_route_up(node, end_id)
+
+        node = find_node(root, end_id)
+        return find_route_up(node, start_id)
+
+    start_node = find_node(root, start_id)
+    parent_route = find_route_up(start_node, end_id)
+
+    if parent_route.__len__() != 0:
+        return parent_route
+    children_route = find_route_down(start_node, end_id)
+
+    if children_route.__len__() != 0:
+        return children_route
+    return []
+
+
+def main() -> None:
+    id_list, parent_id_list = read_file('Oppgave.xlsx')
+    root, node_list = create_node_list(id_list, parent_id_list)
+    create_tree(root, node_list)
+
+    pprint(find_route(root, 1, 28792))
+
+
+def start_program(root: Node) -> None:
+    while True:
+        print("+------------------------Demo of methods---+---------------+")
+        print("| Check how many levels there are?         | Press 0       |")
+        print("| Check which IDs are at a level?          | Press 1       |")
+        print("| Check the path from one Node to another? | Press 2       |")
+        print("| To exit                                  | Press 3       |")
+        print("+------------------------------------------+---------------+")
+        answer = input("Choose an action: ")
+        if answer == 0:
+            print(find_maximum(root))
+        if answer == 1:
+            level_number = int(input("Choose a level: "))
+            pprint(find_nodes_at_depth(root, level_number))
+        if answer == 2:
+            start_id = int(input("Start id: "))
+            end_id = int(input("End id: "))
+            pprint(find_route(root, start_id, end_id))
+        if answer == 3:
+            break
 
 
 if __name__ == '__main__':
