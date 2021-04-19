@@ -124,87 +124,66 @@ def find_nodes_at_depth(root: Node, depth: int, current_nodes: List[Node] = []):
     return current_nodes
 
 
-def find_route_up(start_node: Node, end_id: int, path: List[Node] = []) -> List[Node]:
+def find_path( root: Node, start_node: Node, end_node: Node) -> List[Node]:
     """
+    Find path from start_node to end_node.
+    Find parent path from both start node and end node and then find first common node in both paths
+    Remove excess nodes from both paths and concat them to a combined path.
+    Reverse path_two such that the final path is in sorted order.
+    :param root: Root node of a given tree
+    :param start_node: node we want to find path from
+    :param end_node: node we want to find path to
+    :return: path of nodes or empty path if there is no such path.
+    """
+    current_node = start_node
+    path_one = []
+    while current_node != root:
+        path_one.append(current_node)
+        current_node = current_node.parent
 
-    :param start_node:
-    :param end_id:
-    :param path:
-    :return:
-    """
-    if start_node.parent_id is None and start_node.id != end_id:
+    current_node = end_node
+    path_two = []
+    while current_node != root:
+        path_two.append(current_node)
+        current_node = current_node.parent
+
+    common_node = None
+    for node in path_one:
+        if node in path_two:
+            common_node = node
+            break
+    if common_node is None:
         return []
 
-    if start_node.id == end_id:
-        path.append(start_node)
-        return path
-
-    path.append(start_node)
-    return find_route_up(start_node.parent, end_id, path)
-
-
-def find_route_down(start_node: Node, end_id: int, visited: List[Node] = [], path: List[Node] = []) -> List[Node]:
-    """
-
-    :param start_node:
-    :param end_id:
-    :param visited:
-    :param path:
-    :return:
-    """
-    if start_node not in visited:
-        path.append(start_node)
-    if start_node.children.__len__() == 0:
-        return path
-
-    for child in start_node:
-        find_route_down(child, end_id, path)
-        for node in path:
-            if node.id == end_id:
-                return path
-            visited.append(node)
-
-        path = []
-
-    return path
+    path_one = path_one[0: path_one.index(common_node)+1]
+    path_two = path_two[0: path_two.index(common_node)]
+    path_two.reverse()
+    final_path = path_one + path_two
+    return final_path
 
 
-def find_route(root: Node, start_id: int,  end_id: int, is_desc=False) -> List[Node]:
+def find_route(root: Node, start_id: int,  end_id: int) -> List[Node]:
     """
     Find route from a node with a id = start_id to another node with id = end_id
     :param root: root of the tree we want to search in
     :param start_id: id of the node we want to search from
     :param end_id: id of the node we want to find
-    :param is_desc: if tree is strictly descending we can swap start and end_id and use same algorithm to find path.
     :return: List of Nodes encountered in the path from start to end.
     """
-
-    if is_desc:
-        if start_id > end_id:
-            node = find_node(root, start_id)
-            return find_route_up(node, end_id)
-
-        node = find_node(root, end_id)
-        return find_route_up(node, start_id)
-
     start_node = find_node(root, start_id)
-    parent_route = find_route_up(start_node, end_id)
-
-    if parent_route.__len__() != 0:
-        return parent_route
-    children_route = find_route_down(start_node, end_id)
-
-    if children_route.__len__() != 0:
-        return children_route
-    return []
+    end_node = find_node(root, end_id)
+    route = find_path(root, start_node, end_node)
+    if route.__len__() == 0:
+        return []
+    return route
 
 
 def main() -> None:
-    id_list, parent_id_list = read_file('Oppgave.xlsx')
+    id_list, parent_id_list = read_file('Oppgave2.xlsx')
     root, node_list = create_node_list(id_list, parent_id_list)
     create_tree(root, node_list)
 
-    pprint(find_route(root, 1, 28792))
+    pprint(find_route(root, 4, 5))
 
 
 def start_program(root: Node) -> None:
