@@ -1,9 +1,10 @@
 from __future__ import annotations
+from typing import Optional
 import json
 
 
 class Node:
-    def __init__(self, id, parent_id=None):
+    def __init__(self, id: int, parent_id=None):
         """
         Init
         :param id: ID of node
@@ -13,7 +14,7 @@ class Node:
         self.parent_id = parent_id
         self.depth = 1
         self.children = []
-        self.parent: Node = None
+        self.parent: Optional[Node] = None
 
     def add_child(self, node: Node) -> None:
         """

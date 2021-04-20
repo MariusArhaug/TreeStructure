@@ -10,7 +10,7 @@ def read_file(filename: str) -> Tuple[List[str], List[str]]:
     """
     Read file
     :param filename: Read file with filename
-    :return: Two lists with ID and PArent_IDs respectively
+    :return: Two lists with ID and Parent_IDs respectively
     """
     data = pd.read_excel(rf'{filename}', sheet_name="Data", usecols=['ID', 'PARENT_ID'])
     id_list = data['ID'].tolist()
@@ -44,10 +44,11 @@ def create_node_list(id_list: List[str], parent_list: List[str]) -> Tuple[Node, 
 
 def create_tree(root: Node, node_list: List[Node]) -> Node:
     """
-
-    :param root:
-    :param node_list:
-    :return:
+    Creates a tree structure by first hashing all node's ids into hashmap.
+    Then find every parent id and add as child. Use hashmaps constant look up time O(1) to our advantage.
+    :param root: Root of the tree to be created
+    :param node_list: List of nodes that have both a own unique ID and a Parent_ID.
+    :return: Root of created tree.
     """
     hashmap = {root.id: root}
 
@@ -61,7 +62,7 @@ def create_tree(root: Node, node_list: List[Node]) -> Node:
     return root
 
 
-def create_depth(node_list, depth=1):
+def create_depth(node_list: List[Node], depth=1):
     """
     Go through tree recursively and increment depth counter for each level
     :param node_list: list of root nodes
@@ -73,7 +74,7 @@ def create_depth(node_list, depth=1):
         create_depth(node.children, depth + 1)
 
 
-def find_maximum(root: Node, max_depth: int = 1) -> int:
+def find_maximum(root: Node, max_depth=1) -> int:
     """
     Find deepest depth level of leaf nodes in a given tree
     :param root: Root of tree
@@ -108,7 +109,7 @@ def find_node(root: Node, node_id: int) -> Optional[Node]:
     return None
 
 
-def find_nodes_at_depth(root: Node, depth: int, current_nodes: List[Node] = []):
+def find_nodes_at_depth(root: Node, depth: int, current_nodes: List[Node] = []) -> List[Node]:
     """
     Find all nodes at a given depth
     :param root: root of tree to search in
@@ -124,7 +125,7 @@ def find_nodes_at_depth(root: Node, depth: int, current_nodes: List[Node] = []):
     return current_nodes
 
 
-def find_path( root: Node, start_node: Node, end_node: Node) -> List[Node]:
+def find_path(root: Node, start_node: Node, end_node: Node) -> List[Node]:
     """
     Find path from start_node to end_node.
     Find parent path from both start node and end node and then find first common node in both paths
@@ -140,12 +141,19 @@ def find_path( root: Node, start_node: Node, end_node: Node) -> List[Node]:
     while current_node != root:
         path_one.append(current_node)
         current_node = current_node.parent
+        if current_node == end_node:
+            path_one.append(current_node)
+            return path_one
 
     current_node = end_node
     path_two = []
     while current_node != root:
         path_two.append(current_node)
         current_node = current_node.parent
+        if current_node == start_node:
+            path_two.append(current_node)
+            path_two.reverse()
+            return path_two
 
     common_node = None
     for node in path_one:
@@ -179,11 +187,10 @@ def find_route(root: Node, start_id: int,  end_id: int) -> List[Node]:
 
 
 def main() -> None:
-    id_list, parent_id_list = read_file('Oppgave2.xlsx')
+    id_list, parent_id_list = read_file('Oppgave.xlsx')
     root, node_list = create_node_list(id_list, parent_id_list)
     create_tree(root, node_list)
-
-    pprint(find_route(root, 4, 5))
+    start_program(root)
 
 
 def start_program(root: Node) -> None:
@@ -195,16 +202,16 @@ def start_program(root: Node) -> None:
         print("| To exit                                  | Press 3       |")
         print("+------------------------------------------+---------------+")
         answer = input("Choose an action: ")
-        if answer == 0:
-            print(find_maximum(root))
-        if answer == 1:
+        if answer == '0':
+            print(f'There are: {find_maximum(root)} levels to this tree with root {root}')
+        if answer == '1':
             level_number = int(input("Choose a level: "))
             pprint(find_nodes_at_depth(root, level_number))
-        if answer == 2:
+        if answer == '2':
             start_id = int(input("Start id: "))
             end_id = int(input("End id: "))
             pprint(find_route(root, start_id, end_id))
-        if answer == 3:
+        if answer == '3':
             break
 
 
