@@ -8,7 +8,7 @@ class Node {
     this.children = children;
 
     this.radius = this.fixedSize + (this.fixedSize * this.children.length)/4;
-    this.x = canvas.width/2;
+    this.x = window.innerWidth/2;
     this.y = 100;
   }
   *[Symbol.iterator]() {

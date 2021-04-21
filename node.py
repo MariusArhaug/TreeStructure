@@ -69,4 +69,3 @@ class Node:
         yield self
         for child in self:
             yield from child.walk()
-

@@ -4,7 +4,7 @@
     <link rel="stylesheet" href="main.css">
     <script type="module">
       import visualize from './visualize.js';
-      fetch('print1.json')
+      fetch('print.json')
         .then(response => response.json())
         .then(data => {
           visualize(data)
@@ -12,10 +12,8 @@
     </script>
   </head>
   <body>
-    <div id='main_div'>
-      <canvas id='canvas'>
+    <canvas id='canvas'>
 
-      </canvas>
-    </div>
+    </canvas>
   </body>
 </html>
