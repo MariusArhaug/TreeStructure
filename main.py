@@ -20,7 +20,8 @@ def read_file(filename: str) -> Tuple[List[str], List[str]]:
 
 
 def write_to_file(root: Node, filename: str) -> None:
-    with open(filename, 'w') as file:
+    path = 'files'
+    with open(path + '/' + filename, 'w') as file:
         output = root.to_JSON()
         file.write(output)
 
@@ -188,7 +189,7 @@ def find_route(root: Node, start_id: int,  end_id: int) -> List[Node]:
 
 
 def main() -> None:
-    id_list, parent_id_list = read_file('Oppgave.xlsx')
+    id_list, parent_id_list = read_file('files/Oppgave2.xlsx')
     root, node_list = create_node_list(id_list, parent_id_list)
     create_tree(root, node_list)
     start_program(root)
@@ -200,20 +201,27 @@ def start_program(root: Node) -> None:
         print("| Check how many levels there are?         | Press 0       |")
         print("| Check which IDs are at a level?          | Press 1       |")
         print("| Check the path from one Node to another? | Press 2       |")
-        print("| To exit                                  | Press 3       |")
+        print("| Export tree to JSON?                     | Press 3       |")
+        print("| To exit                                  | Press 4       |")
         print("+------------------------------------------+---------------+")
         answer = input("Choose an action: ")
         if answer == '0':
-            print(
-                f'There are: {find_maximum(root)} levels to this tree with root {root}')
+            print(f'There are: {find_maximum(root)} levels to this tree with root {root}')
+
         if answer == '1':
             level_number = int(input("Choose a level: "))
             pprint(find_nodes_at_depth(root, level_number))
+
         if answer == '2':
             start_id = int(input("Start id: "))
             end_id = int(input("End id: "))
             pprint(find_route(root, start_id, end_id))
+
         if answer == '3':
+            filename = input("Save to file: ")
+            write_to_file(root, filename)
+            print(f"Success! Root written to file {filename}")
+        if answer == '4':
             break
 
 

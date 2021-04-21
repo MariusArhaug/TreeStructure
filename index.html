@@ -3,8 +3,8 @@
   <head>
     <link rel="stylesheet" href="main.css">
     <script type="module">
-      import visualize from './visualize.js';
-      fetch('print.json')
+      import visualize from '/visualize.js';
+      fetch('files/print.json')
         .then(response => response.json())
         .then(data => {
           visualize(data)
