@@ -66,7 +66,8 @@ export default function visualize(jsonObj) {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
   ctx = canvas.getContext('2d');
-  let root = new Node(jsonObj)
+
+  const root = new Node(jsonObj)
   root.drawNode();
   drawTree(root);
   root.drawID();
@@ -88,8 +89,8 @@ function drawTree(root) {
   let firstHalf = children.splice(0, half);
   let secondHalf = children.splice(-half);
   
-  firstHalf = drawNodeAndEdge(root, firstHalf, true);
-  secondHalf = drawNodeAndEdge(root, secondHalf, false);
+  firstHalf = drawAndUpdateNodeArray(root, firstHalf, true);
+  secondHalf = drawAndUpdateNodeArray(root, secondHalf, false);
   children = [...[...firstHalf, ...secondHalf]];
   for (let childNode of children) {
     drawTree(childNode);
@@ -101,28 +102,44 @@ function drawTree(root) {
  * @param {*} root Root/parent of the nodeArray
  * @param {*} nodeArray array of children nodes of root
  * @param {*} left decide to draw nodes either to the left or right. 
- * @returns 
+ * @returns Updated array where json objects have been turned into Node objects.
  */
-const drawNodeAndEdge = (root, nodeArray, left) => {
+const drawAndUpdateNodeArray = (root, nodeArray, left) => {
   return nodeArray.map((node, i) => {
     node = new Node(node);
     const x = root.x + (left ? -1 : 1 ) * (20 + node.radius*2)*(i + (left ? 0 : 1))*(1.5 * nodeArray.length * 0.5 * node.depth);
-    const y = root.y + (50 + node.radius*2) * 0.2 * node.depth;
+    const y = root.y + (50 + node.radius*2) * 0.25 * node.depth;
     node.updateCoordinates(x, y);
     node.drawNode();
     node.drawEdge(root.x , root.y);
     return node;
   })
 }
-
+/**
+ * Find parent node of a given node
+ * @param {*} nodeList List of nodes to check
+ * @param {*} node child node
+ * @returns parent_node of node
+ */
 function findParentNode(nodeList, node) {
   return nodeList.filter(o => o.id === node.parent_id)[0];
 }
 
+/**
+ * Find height of tree nodes converted to a list
+ * @param {*} nodeList list of nodes in a tree
+ * @returns number 
+ */
 function maxDepth(nodeList) {
   return Math.max(...nodeList.map(node => node.depth))
 }
 
+/**
+ * Turn a nested json object, a tree structures into a flat array with all nodes
+ * @param {*} root root of tree
+ * @param {*} nodes array of nodes discovered in tree paths.
+ * @returns array of nodes from tree. 
+ */
 function flattenJSON(root, nodes=[]) {
   nodes.push(root)
   if (root.children.length === 0) {
