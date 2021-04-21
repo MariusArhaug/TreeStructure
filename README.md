@@ -188,5 +188,134 @@ An visualization of the algorithm:
 >List of nodes visited from Node 7 to Node 6.
 </br>
 
+## Visualization
+To visualize our tree we can use the json library in Python. To avoid JSON circular refrence we have to implenet our own obj to dict method that the JSON.dumps can convert into JSON objects. 
 
+```python
+def to_JSON(self) -> str:
+  return json.dumps(self.__to_dict__(), indent=2)
+```
 
+The following output will be an json file that we could potentially send as an API etc. Using JavaScript we can visualize this by either creating SVG elements or drawing on a canvas. 
+
+```json
+{
+  "id": 1,
+  "parent_id": null,
+  "depth": 1,
+  "children": [
+    {
+      "id": 2,
+      "parent_id": 1,
+      "depth": 2,
+      "children": [
+        {
+          "id": 7,
+          "parent_id": 2,
+          "depth": 3,
+          "children": []
+        },
+        {
+          "id": 5,
+          "parent_id": 2,
+          "depth": 3,
+          "children": [
+            {
+              "id": 8,
+              "parent_id": 5,
+              "depth": 4,
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "parent_id": 1,
+      "depth": 2,
+      "children": []
+    },
+    {
+      "id": 4,
+      "parent_id": 1,
+      "depth": 2,
+      "children": [
+        {
+          "id": 6,
+          "parent_id": 4,
+          "depth": 3,
+          "children": []
+        }
+      ]
+    }
+  ]
+}
+
+```
+> JSON structure of Tree from Example 1
+> 
+
+Using JavaScript as mentioned earlier we can visualize it. Using the functions *visualize* *drawTree* and *drawAndUpdateNodeArray*. This can be followed through. 
+
+```javascript
+export default function visualize(jsonObj) {
+  canvas = document.getElementById('canvas');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  ctx = canvas.getContext('2d');
+
+  const root = new Node(jsonObj)
+  root.drawNode();
+  drawTree(root);
+  root.drawID();
+}
+
+/**
+ * Draw a tree on canvas from a given root Node
+ * Split opp root's children in two halfes,
+ * so that they can be drawn from center then +/- depending on left and right.
+ * @param {*} root Root of the tree
+ * @returns undefined. 
+ */
+function drawTree(root) {
+  if (root.children.length === 0) {
+    return;
+  }
+  let children = root.children;
+  const half = Math.ceil(children.length / 2);
+  let firstHalf = children.splice(0, half);
+  let secondHalf = children.splice(-half);
+  
+  firstHalf = drawAndUpdateNodeArray(root, firstHalf, true);
+  secondHalf = drawAndUpdateNodeArray(root, secondHalf, false);
+  children = [...[...firstHalf, ...secondHalf]];
+  for (let childNode of children) {
+    drawTree(childNode);
+    childNode.drawID();
+  }
+}
+/**
+ * Draw nodes in nodeArray aswell as edge from drawn node to root node. 
+ * @param {*} root Root/parent of the nodeArray
+ * @param {*} nodeArray array of children nodes of root
+ * @param {*} left decide to draw nodes either to the left or right. 
+ * @returns Updated array where json objects have been turned into Node objects.
+ */
+const drawAndUpdateNodeArray = (root, nodeArray, left) => {
+  return nodeArray.map((node, i) => {
+    node = new Node(node);
+    const x = root.x + (left ? -1 : 1 ) * (20 + node.radius*2)*(i + (left ? 0 : 1))*(1.5 * nodeArray.length * 0.5 * node.depth);
+    const y = root.y + (50 + node.radius*2) * 0.25 * node.depth;
+    node.updateCoordinates(x, y);
+    node.drawNode();
+    node.drawEdge(root.x , root.y);
+    return node;
+  })
+}
+
+```
+
+<img src="pictures/canvas-tree.jpg" alt="canvas-picture">
+> Final output from JS script.
+> 
