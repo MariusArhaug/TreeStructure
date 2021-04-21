@@ -22,7 +22,8 @@ In this example row one has an ID of 1 and an empty ParentID therefore it is the
 
 
 <img src="pictures/tree-example.jpg" alt="tree"/>
-A visual representation of the tree created from Example 1.
+> A visual representation of the tree created from Example 1.
+> 
 
 
 #### Node 
@@ -180,7 +181,7 @@ def find_path(root: Node, start_node: Node, end_node: Node) -> List[Node]:
     return final_path
 
 ```
-An visualization of the algorithm: 
+### An visualization of the algorithm: 
 <img src="pictures/tree-path.jpg" alt="tree-path" />
 >Find path from Node 7 to Node 6.
 </br>
