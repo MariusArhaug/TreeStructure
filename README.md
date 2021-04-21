@@ -18,9 +18,12 @@ ID        | Parent ID
 8       | 5
 6       | 4
 > Table columns/row dosen't have to be sorted in any particular order. The example table is listed this way to make it easier for us to read. 
-<img src="pictures/tree-example.jpg" alt="tree" width="500" />
-
 In this example row one has an ID of 1 and an empty ParentID therefore it is the root of our tree. 
+
+
+<img src="pictures/tree-example.jpg" alt="tree"/>
+A visual representation of the tree created from Example 1.
+
 
 #### Node 
 To better maintain and manipulate the data gathered from the spreadsheet it would be advisable to convert them into class objects. A node class has therefore been implementedin the file [**Node.py**](./node.py), where the initial state of the object looks like this: After converting all the rows in the excel sheet into individual Node objects, can we finally start to create our tree.  
@@ -81,10 +84,10 @@ def add_parent(self, node: Node) -> None:
 
 #### Create and find depth/height of tree:
 After creating the final tree structure(s), we can assign a depth value to each node in the tree. The root has a depth level of 1, then each child of the root has a depth of 2 and so on. 
-
+</br>
 <img src="pictures/tree-depth.jpg" alt="tree-depth" />
 >Depth levels of tree wherer root node has starting height/depth of 1. 
-
+</br>
 
 
 This is achieved by traversing the tree, starting from the root and incrementing a counter everytime its done traversing a node's children. It then begins to traverse the child's children and so on until there are no more. This functions mutates the incomming root argument. 
@@ -124,10 +127,6 @@ def find_maximum(root: Node, max_depth=1) -> int:
 
 #### Find path from one node to another 
 Lets say we want to find the path from a node i.e Node 7 to Node 6. what would be the most efficient way to do this? 
-<img src="pictures/tree-path.jpg" alt="tree-path" />
->Find path from Node 7 to Node 6
-<img src="pictures/path-list.jpg" alt="tree-list" />
->List of nodes visited from Node 7 to Node 6.
 
 The fastest way to solve this is to let both nodes begin a traversal up to the root of the tree. This is done with two while loops where we change _current_node_ to be the parent of our start and end nodes. By the end of this traversal we will have two paths for each node respecitvely where there may be a common node in both paths. If thats the case we can then concat path one and reverse the second path to get a final path that has the node visited ordered from start to end. There will always be atleast one common node in both paths that being the root. This is our wors case. 
 
@@ -181,7 +180,13 @@ def find_path(root: Node, start_node: Node, end_node: Node) -> List[Node]:
     return final_path
 
 ```
-
+An visualization of the algorithm: 
+<img src="pictures/tree-path.jpg" alt="tree-path" />
+>Find path from Node 7 to Node 6.
+</br>
+<img src="pictures/path-list.jpg" alt="tree-list" />
+>List of nodes visited from Node 7 to Node 6.
+</br>
 
 
 
