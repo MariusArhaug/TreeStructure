@@ -12,7 +12,8 @@ def read_file(filename: str) -> Tuple[List[str], List[str]]:
     :param filename: Read file with filename
     :return: Two lists with ID and Parent_IDs respectively
     """
-    data = pd.read_excel(rf'{filename}', sheet_name="Data", usecols=['ID', 'PARENT_ID'])
+    data = pd.read_excel(rf'{filename}', sheet_name="Data", usecols=[
+                         'ID', 'PARENT_ID'])
     id_list = data['ID'].tolist()
     parent_list = data['PARENT_ID'].tolist()
     return id_list, parent_list
@@ -34,11 +35,11 @@ def create_node_list(id_list: List[str], parent_list: List[str]) -> Tuple[Node, 
     """
     nodes = []
     root_node = None
-    for id, parent_id in zip(id_list, parent_list):
+    for node_id, parent_id in zip(id_list, parent_list):
         if math.isnan(parent_id):
-            root_node = Node(int(id), None)
+            root_node = Node(int(node_id), None)
             continue
-        nodes.append(Node(int(id), int(parent_id)))
+        nodes.append(Node(int(node_id), int(parent_id)))
     return root_node, nodes
 
 
@@ -203,7 +204,8 @@ def start_program(root: Node) -> None:
         print("+------------------------------------------+---------------+")
         answer = input("Choose an action: ")
         if answer == '0':
-            print(f'There are: {find_maximum(root)} levels to this tree with root {root}')
+            print(
+                f'There are: {find_maximum(root)} levels to this tree with root {root}')
         if answer == '1':
             level_number = int(input("Choose a level: "))
             pprint(find_nodes_at_depth(root, level_number))
