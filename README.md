@@ -183,11 +183,12 @@ def find_path(root: Node, start_node: Node, end_node: Node) -> List[Node]:
 ```
 ### An visualization of the algorithm: 
 <img src="pictures/tree-path.jpg" alt="tree-path" />
->Find path from Node 7 to Node 6.
-</br>
+> Find path from Node 7 to Node 6.
+>
+
 <img src="pictures/path-list.jpg" alt="tree-list" />
->List of nodes visited from Node 7 to Node 6.
-</br>
+> List of nodes visited from Node 7 to Node 6.
+>
 
 ## Visualization
 To visualize our tree we can use the json library in Python. To avoid JSON circular refrence we have to implenet our own obj to dict method that the JSON.dumps can convert into JSON objects. 
@@ -318,5 +319,5 @@ const drawAndUpdateNodeArray = (root, nodeArray, left) => {
 ```
 
 <img src="pictures/canvas-tree.jpg" alt="canvas-picture">
-> Final output from JS script.
+>Final output from JS script.
 > 
