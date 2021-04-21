@@ -1,0 +1,30 @@
+{
+  "name": "treestructure",
+  "version": "1.0.0",
+  "description": "traverse and visualize a tree with n child, the tree is of m length",
+  "main": "visualize.js",
+  "type": "module",
+  "scripts": {
+    "start": "node visualize.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MariusArhaug/TreeStructure.git"
+  },
+  "keywords": [
+    "Tree",
+    "Nodes",
+    "Verticies",
+    "Graphs"
+  ],
+  "author": "Marius Arhaug",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MariusArhaug/TreeStructure/issues"
+  },
+  "homepage": "https://github.com/MariusArhaug/TreeStructure#readme",
+  "dependencies": {
+    "node-fetch": "^2.6.1"
+  }
+}
