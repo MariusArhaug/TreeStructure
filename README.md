@@ -127,13 +127,6 @@ def find_maximum(root: Node, max_depth=1) -> int:
 
 #### Find path from one node to another 
 Lets say we want to find the path from a node i.e Node 7 to Node 6. what would be the most efficient way to do this? 
-<img src="pictures/tree-path.jpg" alt="tree-path" />
->Find path from Node 7 to Node 6.
-</br>
-<img src="pictures/path-list.jpg" alt="tree-list" />
->List of nodes visited from Node 7 to Node 6.
-</br>
-
 
 The fastest way to solve this is to let both nodes begin a traversal up to the root of the tree. This is done with two while loops where we change _current_node_ to be the parent of our start and end nodes. By the end of this traversal we will have two paths for each node respecitvely where there may be a common node in both paths. If thats the case we can then concat path one and reverse the second path to get a final path that has the node visited ordered from start to end. There will always be atleast one common node in both paths that being the root. This is our wors case. 
 
@@ -187,7 +180,13 @@ def find_path(root: Node, start_node: Node, end_node: Node) -> List[Node]:
     return final_path
 
 ```
-
+An visualization of the algorithm: 
+<img src="pictures/tree-path.jpg" alt="tree-path" />
+>Find path from Node 7 to Node 6.
+</br>
+<img src="pictures/path-list.jpg" alt="tree-list" />
+>List of nodes visited from Node 7 to Node 6.
+</br>
 
 
 
